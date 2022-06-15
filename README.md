@@ -11,3 +11,4 @@
 
 5) To quit the demo press. `control+C`
 
+On raspberry pi you might need the additional command to install cv2 `sudo apt-get install libopencv-dev python3-opencv`
