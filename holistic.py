@@ -1,11 +1,27 @@
 import cv2
 import mediapipe as mp
+import math
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
 mp_face_mesh = mp.solutions.face_mesh
 mp_hands = mp.solutions.hands
+
+def slope(x1, y1, x2, y2): # Line slope given two points:
+    return (y2-y1)/(x2-x1)
+
+def angle(s1, s2): 
+    return math.degrees(math.atan((s2-s1)/(1+(s2*s1))))
+
+def slope_(lm, x,y,z):
+    x=lm[x]
+    y=lm[y]
+    z=lm[z]
+    m1=slope(x.x, x.y, y.x, y.y)
+    m2=slope(z.x, z.y, y.x, y.y)
+
+    return angle(m1, m2)
 
 def l2_dist(p1, p2, h, w, c):
     # print(p1.x*w, p1.y*h)
@@ -36,11 +52,22 @@ with mp_holistic.Holistic(
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
+#12, 14, 16
+#11, 13, 15
+    if (results.pose_landmarks):
+        angr=slope_(results.pose_landmarks.landmark, 16, 14, 12)
+        print("right angle: ", angr)
+        angl=slope_(results.pose_landmarks.landmark, 11, 13, 15)
+        print("left angle: ", angl)
+
+
 
     if (results.face_landmarks and results.right_hand_landmarks):
-        print(results.right_hand_landmarks.landmark[12].z, results.face_landmarks.landmark[130].z)
+        # print(results.right_hand_landmarks.landmark[12].z, results.face_landmarks.landmark[130].z)
         if l2_dist(results.face_landmarks.landmark[130], results.right_hand_landmarks.landmark[12], h, w, 1)>1.75*l2_dist(results.right_hand_landmarks.landmark[12], results.right_hand_landmarks.landmark[11], h, w, 1):
-            print("Not correct distance.",  l2_dist(results.face_landmarks.landmark[130], results.right_hand_landmarks.landmark[12], h, w, min(h, w)))
+            print("Not correct distance.")
+        else:
+            print("Correct distance.")
         
     mp_drawing.draw_landmarks(
         image,
