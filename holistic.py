@@ -21,7 +21,10 @@ def slope_(lm, x,y,z):
     m1=slope(x.x, x.y, y.x, y.y)
     m2=slope(z.x, z.y, y.x, y.y)
 
-    return angle(m1, m2)
+    ang= angle(m1, m2)
+    if ang<0:
+        ang=ang+180
+    return ang
 
 def l2_dist(p1, p2, h, w, c):
     # print(p1.x*w, p1.y*h)
